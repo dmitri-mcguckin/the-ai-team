@@ -4,13 +4,13 @@ import matplotlib.pyplot as plt
 
 #Preprocessing. 60,000 X 784pixels training images  paired with 60,000 image cfs.
 images,labels = loadlocal_mnist(
-        images_path='./MNIST_data/train-images.idx3-ubyte', 
-        labels_path='./MNIST_data/train-labels.idx1-ubyte') #load ubyte training data and corresponding labels.
+        images_path='data/train-images-idx3-ubyte',
+        labels_path='data/train-labels-idx1-ubyte') #load ubyte training data and corresponding labels.
 
 test_images,test_labels = loadlocal_mnist(
-        images_path='./MNIST_data/t10k-images.idx3-ubyte', 
-        labels_path='./MNIST_data/t10k-labels.idx1-ubyte') #load ubyte training data and corresponding labels.
-        
+        images_path='data/t10k-labels-idx1-ubyte',
+        labels_path='data/t10k-images-idx3-ubyte') #load ubyte training data and corresponding labels.
+
 
 images = images / 255 #normalize pixel values in matrix such that for all pixels, pixel value <= 1.
 learning_param = 0.0001 #This is the learning param of the network.
@@ -38,24 +38,24 @@ test_epoch_accuracy = [] # this python array will be used to store (epoch,accura
 #This function trains our network
 def train():
     accuracy = 0.0 #This value tracks the accuracy of the perceptron network for a certain epoch.
-    accuracyIncrementor = 1/len(images) #Whenever a data element is correctly classified, accuracy is incremented 1/60000 in a given epoch. 
-    
-    test_accuracy = 0.0 
-    test_accuracyIncrementor = 1/len(test_images)  
+    accuracyIncrementor = 1/len(images) #Whenever a data element is correctly classified, accuracy is incremented 1/60000 in a given epoch.
 
-    i = 0    
-    epoch = 0           
+    test_accuracy = 0.0
+    test_accuracyIncrementor = 1/len(test_images)
+
+    i = 0
+    epoch = 0
 
     while epoch  <20:
         epoch_accuracy.append(accuracy)
         test_epoch_accuracy.append(test_accuracy)
-        accuracy = 0.0 
+        accuracy = 0.0
         test_accuracy = 0.0
 
         i= 0 #i iterates over test labels
         k = 0 #k iterates over training labels
         print(epoch_accuracy)
-        
+
         for training_data in images:
             training_data_left = training_data.transpose()[left_start:left_end]
             training_data_right =  training_data.transpose()[right_start:right_end]
@@ -66,18 +66,18 @@ def train():
             perceptrons_output =  np.dot( biased_data,perceptron_network) # debug
             percp_class = np.argmax(perceptrons_output) #This number contains the highest firing perceptron index which corresponds to the classified #.
             confusion_matrix[labels[i]][percp_class] += 1
-            
+
             if  percp_class != labels[i]: #if incorrect classification
                 j = 0
-                for neuron in perceptron_network.T: 
+                for neuron in perceptron_network.T:
                     y =  1 if perceptrons_output[j] > 0 else 0 # set y of perceptron to 1 if w.x  > 0
-                    t = int(j == labels[i])                     # If neuron j corresponds to desired class, set t to 1 else set t to 0 
+                    t = int(j == labels[i])                     # If neuron j corresponds to desired class, set t to 1 else set t to 0
                     neuron += biased_data * learning_param * (t - y)  # add delta w to neurons previous weight vector
                     j = j + 1                                   # go onto next neuron
             else: #classification correct increment acc!
                 accuracy += accuracyIncrementor
 
-           
+
             i = i + 1 #increment i.
 
 
@@ -93,19 +93,19 @@ def train():
 
             if(percp_class == test_labels[k]):
                 test_accuracy += test_accuracyIncrementor
-            
-            
+
+
             k+=1
 
 
         epoch += 1 #all data has been processed which means one epoch has elapsed.
-        
 
 
 
 
 
-        
+
+
 
 train()
 plt.title("Dim reduction test with 60000/60000 images used to train" )
@@ -116,4 +116,3 @@ plt.show()
 
 print(confusion_matrix)
 print(test_confusion_matrix)
-
